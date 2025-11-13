@@ -1,0 +1,21 @@
+{
+    "name": "yksiktest-t5-repo",
+    "version": "1.0.0",
+    "main": "ravintola.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "test": "vitest"
+    },
+    "keywords": [],
+    "author": "Jun Fengari",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "@eslint/js": "^9.39.1",
+        "eslint": "^9.39.1",
+        "globals": "^16.5.0",
+        "vitest": "^4.0.8"
+    }
+}
