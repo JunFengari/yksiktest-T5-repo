@@ -6,7 +6,7 @@
         "test": "test"
     },
     "scripts": {
-        "test": "vitest"
+        "test": "vitest run"
     },
     "keywords": [],
     "author": "Jun Fengari",
