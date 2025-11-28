@@ -63,7 +63,7 @@ describe('testing laskeLasku', () => {
 /* ------------------------ Tehtävä 1.2 -----------------------------*/
 
 describe('Testing palautaTaulukonSatunnainenArvo', () => {
-    it('should return a value from chosen array', () => {
+    it('should return a value from chosen array (dessert)', () => {
         const array = ravintola.jalkiruoat;
         // Arrange: valitaan yksi taulukko
 
@@ -82,9 +82,14 @@ describe('Testing syoRavintolassa ', () => {
         //Arrange: testing with a value less than the maximum customers allowed
 
         const result = ravintola.syoRavintolassa(ltmaxAsiakkaat);
-        // Act, so giving the asiakasmäärä to the function syoRavintolassa
+        // Act: so giving the asiakasmäärä to the function syoRavintolassa
 
         expect(Array.isArray(result)).toBe(true);
-        // Assert, expecting the result to be an array (true)
+        // Assert: expecting the result to be an array (true) / can also use assert.include
     });
 });
+
+/* Käytin tässä tehtävässä tekoälyä ensimmäisen testitapauksen generointiin
+ja sitten yritin seuraavissa itse miettiä miten niitä tehdään. Käytin tekoälyä 
+selittämään miten pitäisi tehdä näitä testejä ja miten, sekä epäonnistuineiden
+testitapausten korjaamiseen*/

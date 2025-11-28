@@ -4,14 +4,24 @@ OHJELMAKOODI
 */
 
 const Ravintola = function () {
-    this.alkuruoat = ['Tomaattikeitto', 'LeipÃ¤', 'Vihersalaatti', 'Salsa'];
-    this.paaruoat = [
-        'Kalakeitto',
-        'Makaroonilaatikko',
-        'Kasvispihvi',
-        'Kanasalaatti',
+    this.alkuruoat = [
+        { ruoka: 'Tomaattikeitto', hinta: 5 },
+        { ruoka: 'Leipä', hinta: 2 },
+        { ruoka: 'Vihersalaatti', hinta: 10 },
+        { ruoka: 'Salsa', hinta: 1 },
     ];
-    this.jalkiruoat = ['HedelmÃ¤salaatti', 'JÃ¤Ã¤telÃ¶', 'Pulla', 'Donitsi'];
+    this.paaruoat = [
+        { ruoka: 'Kalakeitto', hinta: 10 },
+        { ruoka: 'Makaroonilaatikko', hinta: 12 },
+        { ruoka: 'Kasvispihvi', hinta: 20 },
+        { ruoka: 'Kanasalaatti', hinta: 15 },
+    ];
+    this.jalkiruoat = [
+        { ruoka: 'Hedelmäsalaatti', hinta: 5 },
+        { ruoka: 'Jäätee', hinta: 3 },
+        { ruoka: 'Pulla', hinta: 4 },
+        { ruoka: 'Donitsi', hinta: 5 },
+    ];
     this.juomat = ['Tee', 'Kahvi', 'Maito', 'Mehu'];
     this.alkuruokaHinta = 4;
     this.paaruokaHinta = 6;
@@ -39,6 +49,11 @@ function generoiBoolean() {
  * @return {object} object array
  */
 Ravintola.prototype.syoRavintolassa = function (asiakkaidenMaara) {
+    const varausOnnistui = this.varaaPaikat(asiakkaidenMaara);
+    if (!varausOnnistui) {
+        throw new Error('Ei tarpeeksi vapaita paikkoja!');
+    }
+
     const onTilaa = this.tarkistaPaikkojenMaara(asiakkaidenMaara);
     if (!onTilaa) {
         return;
@@ -112,16 +127,14 @@ Ravintola.prototype.generoiPaikat = function () {
     this.paikat = new Array(this.paikkojenMaara).fill(false);
 };
 
-// MÄ OOON TÄSSSSSSSSSSSÄÄÄÄÄ
-
 /**
  * Funktion tarkoitus on tehdä varauksia.
  * Vaiheet:
  * Tarkistaa ettö paikat muuttujassa on taulukko.
  * Asetetaan 1 arvo varauksenMaaralle, jos sillä ei ole jo arvoa
- *
+ * Lasketaan paikkojen määrä
  * Määritetään että ei voi varata paikkoja jos varauksien määrä ylittää vapaat paikat
- *
+ * Varataan paikat lisäämällä varattuja muuttujaan
  * Palautetaan true jos kaikki onnistui
  */
 Ravintola.prototype.varaaPaikat = function (varauksenMaara) {
@@ -188,17 +201,17 @@ Ravintola.prototype.tilaaAteria = function (
 
     if (ottaaAlkuruoan) {
         ruoka = this.palautaTaulukonSatunnainenArvo(this.alkuruoat);
-        console.log('Ottaisin alkuruoaksi: ' + ruoka);
+        console.log('Ottaisin alkuruoaksi: ' + ruoka.ruoka);
         ruoat.push(ruoka);
     }
 
     ruoka = this.palautaTaulukonSatunnainenArvo(this.paaruoat);
-    console.log('Ottaisin pÃ¤Ã¤ruoaksi: ' + ruoka);
+    console.log('Ottaisin pÃ¤Ã¤ruoaksi: ' + ruoka.ruoka);
     ruoat.push(ruoka);
 
     if (ottaaJalkiruoan) {
         ruoka = this.palautaTaulukonSatunnainenArvo(this.jalkiruoat);
-        console.log('Ottaisin jÃ¤lkiruoaksi: ' + ruoka);
+        console.log('Ottaisin jÃ¤lkiruoaksi: ' + ruoka.ruoka);
         ruoat.push(ruoka);
     }
 
@@ -208,7 +221,7 @@ Ravintola.prototype.tilaaAteria = function (
         ruoat.push(ruoka);
     }
 
-    const summa = this.laskeLasku(ottaaAlkuruoan, ottaaJalkiruoan, ottaaJuoman);
+    const summa = this.laskeLasku(ruoat);
 
     return { summa, ruoat };
 };
@@ -235,38 +248,33 @@ Ravintola.prototype.palautaTaulukonSatunnainenArvo = function (taulukko) {
  * @param {boolean} ottiJuoman
  * @return {number}
  */
-Ravintola.prototype.laskeLasku = function (
-    ottiAlkuruoan,
-    ottiJalkiruoan,
-    ottiJuoman
-) {
-    if (
-        typeof ottiAlkuruoan !== 'boolean' ||
-        typeof ottiJalkiruoan !== 'boolean' ||
-        typeof ottiJuoman !== 'boolean'
-    ) {
-        throw new TypeError();
+Ravintola.prototype.laskeLasku = function (ruoat) {
+    if (!Array.isArray(ruoat)) {
+        throw new TypeError('Ruoat tulee olla taulukko');
     }
 
     let loppuSumma = 0;
 
-    loppuSumma += this.paaruokaHinta;
-
-    if (ottiAlkuruoan) {
-        loppuSumma += this.alkuruokaHinta;
-    }
-
-    if (ottiJalkiruoan) {
-        loppuSumma += this.jalkiruokaHinta;
-    }
-
-    if (ottiJuoman) {
-        loppuSumma += this.juomaHinta;
+    for (let item of ruoat) {
+        // Jos item on olio → sillä on hinta
+        if (typeof item === 'object' && item !== null && 'hinta' in item) {
+            loppuSumma += item.hinta;
+        }
+        // Jos item on string → se on juoma
+        else if (typeof item === 'string') {
+            loppuSumma += this.juomaHinta;
+        } else {
+            throw new TypeError('Tuntematon ruoka- tai juomaformaatti');
+        }
     }
 
     return loppuSumma;
 };
 
-const ravintola = new Ravintola();
+const ravintola_updated = new Ravintola();
 
-export { ravintola };
+export { ravintola_updated };
+
+/* Käytin tekoälyä ymmärtämään koodin korjausta koskevaa tehtävänantoa, 
+ja tekemään ehdotuksia osiin jota en ymmärtänyt, ja sitten selittämään
+mitä ne tekee */
